@@ -21,18 +21,27 @@ function App() {
   );
   const [expression, setExression] = useState("");
   const [result, setResult] = useState("");
+  const [counter, setCounter] = useState(0);
   const [history, setHistory] = useState(
     JSON.parse(localStorage.getItem("calculator-app-history")) || []
   );
 
+  useEffect(() => {
+    if (counter >= 2) {
+      setHistory("");
+    }
+    setTimeout(function () {
+      setCounter(0);
+    }, 1000);
+  }, [counter]);
   const handleKeyPress = (keyCode, key) => {
     if (!keyCode) return;
     if (!usedKeyCodes.includes(keyCode)) return;
 
     if (numbers.includes(key)) {
-      if (key === "0") {
-        if (expression.length === 0) return;
-      }
+      // if (key === "0") {
+      //   if (expression.length === 0) return;
+      // }
       calculateResult(expression + key);
       setExression(expression + key);
     } else if (operators.includes(key)) {
@@ -54,9 +63,9 @@ function App() {
       calculateResult(expression.slice(0, -1));
       setExression(expression.slice(0, -1));
     } else if (keyCode === 27) {
-      if (!expression) return;
       calculateResult(expression.slice(0, 0));
       setExression(expression.slice(0, 0));
+      setCounter(counter + 1);
     } else if (keyCode === 13) {
       if (!expression) return;
       calculateResult(expression);
@@ -76,7 +85,8 @@ function App() {
     const lastChar = exp.slice(-1);
     if (!numbers.includes(lastChar)) exp = exp.slice(0, -1);
 
-    const answer = eval(exp).toFixed(2) + "";
+    // eslint-disable-next-line no-eval
+    const answer = eval(exp).toFixed(2);
     setResult(answer);
   };
 
